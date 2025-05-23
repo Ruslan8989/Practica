@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "name": "pracrica",
+  "version": "1.0.0",
+  "main": "app.js",
+  "devDependencies": {},
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

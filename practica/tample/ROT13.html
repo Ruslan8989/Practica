@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>ROT13 Шифратор</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="container">
+      
+    <div class="column">
+      <div class="name"><p>Editor</p></div>
+      <textarea id="input" placeholder="Введите текст для шифрования..."class="textarea"></textarea>
+    </div>
+    <div class="column1">
+      <div class="name1"><p>Encrypted</p></div>
+      <div id="output-container">
+        <div id="encrypted-text" style="padding: 10px;"class="text1"></div>
+        <div id="replacements-list" style="padding: 10px;"class="text1"></div>
+      </div>
+
+      <div id="alphabet-replacements" style="padding: 10px; font-family: monospace;"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

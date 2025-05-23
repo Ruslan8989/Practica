@@ -1,0 +1,128 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  background-color: #E8E8E8;
+}
+
+.container {
+  width: 1000px;
+  display: flex;
+  
+  background-color: #ffffff;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 15px;
+}
+
+.column {
+  width: 700px;
+  flex: 1;
+  background-color: #ffffff;
+  border: 1px solid #acaaaa;
+  border-radius: 15px;
+  overflow: hidden;
+  height: 600px;
+  box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.3);
+  margin-top: 100px;
+  margin-left: 25px;
+  margin-bottom: 15px;
+  overflow: auto;
+  scrollbar-width: none;
+}
+
+.column1 {
+  width: 700px;
+  background-color: #FBEEF8;
+  flex: 1;
+  border: 1px solid #754d6d;
+  border-radius: 15px;
+  height: 600px;
+  box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.3);
+  margin-top: 100px;
+  margin-right: 25px;
+  margin-bottom: 15px;
+  color: #7a0266;
+  overflow: scroll;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+
+textarea {
+  width: 400px;
+  height: 580px;
+  padding: 10px;
+  resize: none;
+  border: none;
+  outline: none;
+  font-size: 16px;
+}
+
+.cont {
+  background-color: #FF69B4;
+}
+
+.name {
+  margin-top: 20px;
+  margin-left: 20px;
+  width: 60px;
+  height: 19px;
+  border-radius: 15px;
+  border: 1px solid #754d6d;
+  text-align: center;
+}
+
+.name1 {
+  color: rgb(255, 255, 255);
+  background-color: #910679;
+  margin-top: 20px;
+  margin-left: 20px;
+  width: 60px;
+  height: 19px;
+  border-radius: 15px;
+  border: 1px solid #754d6d;
+  text-align: center;
+}
+
+.name p {
+  position: relative;
+  top: -10px;
+  font-size: 12px;
+}
+
+.name1 p {
+  position: relative;
+  top: -10px;
+  font-size: 12px;
+}
+
+.sale {
+  right: auto;
+  color: #ffffff;
+  border-radius: 15px;
+  border: #7a0266;
+  height: 12px;
+}
+
+.sale button {
+  float: right;
+}
+
+@media screen and (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    width: 95%;
+    margin: 0 auto;
+  }
+
+  .column,
+  .column1 {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 20px;
+  }
+
+  textarea {
+    width: 100%;
+  }
+}
