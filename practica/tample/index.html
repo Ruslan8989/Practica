@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Товары</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Товары</h1>
+    <button id="toggleFiltersBtn">🡒 Фильтры</button>
+
+    <div id="filters" class="filters-container">
+        <h2>Filters</h2>
+        <div id="selected-filters"></div>
+        <button onclick="clearAllFilters()">Clear all</button class='filtbtn'>
+
+      
+        <div id="sort-by">
+            <label for="sort">Sort by:</label>
+            <select id="sort" onchange="applySorting()">
+                <option value="price_asc">Price (Low to High)</option>
+                <option value="price_desc">Price (High to Low)</option>
+                <option value="title_asc">Title (A-Z)</option>
+                <option value="title_desc">Title (Z-A)</option>
+            </select>
+        </div>
+
+        <div id="category-filter"></div>
+    </div>
+
+    <input type="text" placeholder="Поиск..." id="search" class="poisk">
+    <div id="products"></div>
+
+    <script>
+        let products = [];
+        let filteredProducts = [];
+        let appliedFilters = {};
+        let currentSort = 'price_asc';
+
+        async function loadProducts(query = '') {
+            const url = query ? `/api/products/search?q=${query}` : '/api/products';
+            const res = await fetch(url);
+            const data = await res.json();
+            products = data.products || [];
+
+            setupCategories(products);
+            applyAll();
+        }
+
+        function setupCategories(productsList) {
+            const container = document.getElementById('category-filter');
+            if (!container || container.dataset.loaded) return;
+
+            const categoriesSet = new Set();
+            productsList.forEach(p => {
+                if (p.category) categoriesSet.add(p.category);
+            });
+
+            const select = document.createElement('select');
+            select.multiple = true;
+            select.id = 'categories';
+            select.onchange = applyCategoryFilter;
+
+            Array.from(categoriesSet).forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                select.appendChild(option);
+            });
+
+            container.appendChild(select);
+            container.dataset.loaded = 'true';
+        }
+
+        function showProducts() {
+            const container = document.getElementById('products');
+            container.innerHTML = '';
+            filteredProducts.forEach(renderProduct);
+        }
+
+        function renderProduct(p) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <img src="${p.thumbnail}" alt="">
+                <h3>${p.title}</h3>
+                <p>$${p.price}</p>
+                <button class="details-btn">🡽</button>
+            `;
+            card.querySelector('.details-btn').onclick = () => location.href = `/product/${p.id}`;
+            document.getElementById('products').appendChild(card);
+        }
+
+        function applyAll() {
+            let result = [...products];
+
+            const query = document.getElementById('search').value.trim().toLowerCase();
+            if (query) {
+                result = result.filter(p =>
+                    p.title.toLowerCase().includes(query) ||
+                    (p.description && p.description.toLowerCase().includes(query))
+                );
+            }
+
+            Object.entries(appliedFilters).forEach(([key, values]) => {
+                result = result.filter(product =>
+                    values.some(value => product[key]?.includes(value))
+                );
+            });
+
+            result.sort((a, b) => {
+                switch (currentSort) {
+                    case 'price_asc': return a.price - b.price;
+                    case 'price_desc': return b.price - a.price;
+                    case 'title_asc': return a.title.localeCompare(b.title);
+                    case 'title_desc': return b.title.localeCompare(a.title);
+                    default: return 0;
+                }
+            });
+
+            filteredProducts = result;
+            showProducts();
+            updateSelectedFiltersUI();
+        }
+
+        function updateSelectedFiltersUI() {
+            const selected = document.getElementById('selected-filters');
+            selected.innerHTML = '';
+            Object.entries(appliedFilters).forEach(([key, values]) => {
+                values.forEach(value => {
+                    const tag = document.createElement('div');
+                    tag.className = 'filter-tag';
+                    tag.innerHTML = `${value} <span onclick="removeFilter('${key}', '${value}')">&times;</span>`;
+                    selected.appendChild(tag);
+                });
+            });
+        }
+
+        function removeFilter(key, value) {
+            appliedFilters[key] = appliedFilters[key].filter(v => v !== value);
+            if (!appliedFilters[key].length) delete appliedFilters[key];
+            applyAll();
+        }
+
+        function clearAllFilters() {
+            appliedFilters = {};
+            const select = document.getElementById('categories');
+            if (select) select.selectedIndex = -1;
+            applyAll();
+        }
+
+        function applyCategoryFilter() {
+            const select = document.getElementById('categories');
+            const selected = Array.from(select.selectedOptions).map(o => o.value);
+            appliedFilters.category = selected;
+            applyAll();
+        }
+
+        function applySorting() {
+            currentSort = document.getElementById('sort').value;
+            applyAll();
+        }
+
+        document.getElementById('search').addEventListener('input', () => {
+            applyAll();
+        });
+
+        document.getElementById('toggleFiltersBtn').addEventListener('click', () => {
+            const filters = document.getElementById('filters');
+            filters.classList.toggle('active');
+        });
+
+        loadProducts();
+    </script>
+</body>
+</html>

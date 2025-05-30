@@ -1,37 +1,66 @@
-const express = require("express");
-const path = require("path");
+const express = require('express');
+const axios = require('axios');
+const path = require('path');
+const cors = require('cors');
+
 const app = express();
-const PORT = 3000;
+const port = 3000;
 
-app.use(express.static(path.join(__dirname, "tample")));
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "tample", "ROT13.html"));
-});
+app.use(express.static(path.join(__dirname, 'tample')));
 
-app.get("/style", (req, res) => {
-  const cssPath = path.join(__dirname, "tample", "styles.css");
-  res.header("Content-Type", "text/css");
-  res.header("Content-Disposition", "inline");
-  res.sendFile(cssPath);
-});
 
-app.get("/script", (req, res) => {
-  const jsPath = path.join(__dirname, "tample", "script.js");
-  res.header("Content-Type", "text/javascript");
-  res.header("Content-Disposition", "inline");
-  res.sendFile(jsPath);
-});
+app.use(cors());
 
-app.use((req, res, next) => {
-  const imagePath = path.join(__dirname, "tample", "404.png");
-  res.status(404).sendFile(imagePath, (err) => {
-    if (err) {
-      res.status(500).send("Ошибка: Файл 404.png не найден.");
+
+app.get('/api/products', async (req, res) => {
+    try {
+        const response = await axios.get('https://dummyjson.com/products ');
+        res.json(response.data);
+    } catch (e) {
+        res.status(500).send('Ошибка загрузки');
     }
-  });
 });
 
-app.listen(PORT, () => {
-  console.log(`Сервер запущен на http://localhost:${PORT}`);
+app.get('/api/products/:id', async (req, res) => {
+    const { id } = req.params;
+    console.log('Получен запрос за товар с ID:', id);
+    try {
+        const response = await axios.get(`https://dummyjson.com/products/${id}`);
+        console.log('Данные товара:', response.data);
+        res.json(response.data);
+    } catch (e) {
+        console.error('Ошибка при получении товара:', e.message);
+        res.status(404).send('Товар не найден');
+    }
+});
+
+app.get('/api/products/search', async (req, res) => {
+    const q = req.query.q;
+    if (!q) return res.status(400).send('Нет запроса');
+    try {
+        const response = await axios.get(`https://dummyjson.com/products/search?q=${q}`);
+        res.json(response.data);
+    } catch (e) {
+        res.status(500).send('Ошибка поиска');
+    }
+});
+
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'tample', 'index.html'));
+});
+
+app.get('/product/:id', (req, res) => {
+    res.sendFile(path.join(__dirname, 'tample', 'product.html'));
+});
+
+
+app.use((req, res) => {
+    res.status(404).sendFile(path.join(__dirname, 'tample', '404.png'));
+});
+
+
+app.listen(port, () => {
+    console.log(`Сервер запущен на порту ${port}`);
 });
